@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conversor JSON</title>
+    <h1>JSON Tree Viewer by ChatGPT</h1>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .box {
+            width: 45%;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .tree-node {
+            cursor: pointer;
+        }
+
+        .tree-node.collapsed .children {
+            display: none;
+        }
+
+        .tree-node .children {
+            margin-left: 20px;
+        }
+
+        .tree-node .toggle-icon {
+            display: inline-block;
+            margin-right: 5px;
+            font-weight: bold;
+            font-size: 20px;
+            color: limegreen;
+        }
+
+        .tree-node.collapsed .toggle-icon::before {
+            content: "+";
+        }
+
+        .tree-node .toggle-icon::before {
+            content: "-";
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <textarea id="input" class="box" rows="10" placeholder="Introduce el JSON aquí"></textarea>
+        <div id="output" class="box"></div>
+    </div>
+
+    <script>
+        function convertJSON() {
+            var input = document.getElementById("input").value;
+            var output = document.getElementById("output");
+
+            try {
+                var parsedJSON = JSON.parse(input);
+                var indentedJSON = JSON.stringify(parsedJSON, null, 4);
+                output.innerHTML = formatJSON(parsedJSON);
+            } catch (error) {
+                output.innerHTML = "Error al analizar el JSON. Es posible que no sea un JSON válido";
+            }
+        }
+
+        function formatJSON(obj) {
+            if (typeof obj === 'object' && obj !== null) {
+                var html = '<div class="tree-node">' +
+                    '<span class="toggle-icon"></span>' +
+                    getObjectName(obj) +
+                    '<div class="children">';
+                for (var key in obj) {
+                    html += '<div>' + key + ': ' + formatJSON(obj[key]) + '</div>';
+                }
+                html += '</div></div>';
+                return html;
+            } else {
+                if (typeof obj === 'string') {
+                    return '"' + obj + '"';
+                } else {
+                    return obj;
+                }
+            }
+        }
+
+        function getObjectName(obj) {
+            if (Array.isArray(obj)) {
+                return '[Array]';
+            } else if (typeof obj === 'object') {
+                return '{Object}';
+            } else {
+                return obj;
+            }
+        }
+
+        function toggleNode(event) {
+            var target = event.target;
+            if (target.classList.contains("toggle-icon")) {
+                var treeNode = target.parentNode;
+                treeNode.classList.toggle("collapsed");
+            }
+        }
+
+        document.getElementById("input").addEventListener("input", convertJSON);
+
+        document.getElementById("output").addEventListener("click", toggleNode);
+    </script>
+</body>
+</html>
