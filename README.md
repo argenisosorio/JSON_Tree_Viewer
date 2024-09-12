@@ -9,3 +9,7 @@ completa. Sirve sin conexión a internet.
 Creado con ChatGPT
 
 Inspirado en: Online JSON Viewer and Formatter > https://jsonviewer.stack.hu/
+
+## Capturas
+
+![1.png](1.png "1.png")
