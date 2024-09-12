@@ -6,9 +6,11 @@ representa como una rama de un árbol, permitiendo expandir o contraer dichas
 ramas para facilitar su inspección y mejorar la visualización de la estructura
 completa. Sirve sin conexión a internet.
 
-Creado con ChatGPT
+-Creado con ChatGPT
 
-Inspirado en: Online JSON Viewer and Formatter > https://jsonviewer.stack.hu/
+-Inspirado en: Online JSON Viewer and Formatter > https://jsonviewer.stack.hu/
+
+-Pruébalo aquí: https://argenisosorio.github.io/JSON_Tree_Viewer/
 
 ## Capturas
 
