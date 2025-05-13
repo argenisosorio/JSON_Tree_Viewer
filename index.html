@@ -1,25 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Conversor JSON</title>
-    <h1>JSON Tree Viewer by ChatGPT</h1>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor JSON Interactivo</title>
     <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+            --error-color: #e53935;
+            --success-color: #43a047;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-gray);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 2.2rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--medium-gray);
+        }
+
         .container {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .box {
-            width: 45%;
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            font-family: monospace;
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .box:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        #input {
+            resize: none;
+            font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
+            border: 2px solid var(--medium-gray);
+        }
+
+        #input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        #output {
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            border: 2px solid var(--medium-gray);
         }
 
         .tree-node {
             cursor: pointer;
+            margin: 5px 0;
+            line-height: 1.8;
         }
 
         .tree-node.collapsed .children {
@@ -28,14 +90,18 @@
 
         .tree-node .children {
             margin-left: 20px;
+            border-left: 1px dashed var(--medium-gray);
+            padding-left: 15px;
         }
 
         .tree-node .toggle-icon {
             display: inline-block;
             margin-right: 5px;
             font-weight: bold;
-            font-size: 20px;
-            color: limegreen;
+            font-size: 16px;
+            color: var(--primary-color);
+            width: 16px;
+            text-align: center;
         }
 
         .tree-node.collapsed .toggle-icon::before {
@@ -43,71 +109,296 @@
         }
 
         .tree-node .toggle-icon::before {
-            content: "-";
+            content: "−";
+        }
+
+        .key {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .string {
+            color: var(--success-color);
+        }
+
+        .number {
+            color: #d81b60;
+        }
+
+        .boolean {
+            color: #8e24aa;
+        }
+
+        .null {
+            color: var(--dark-gray);
+            font-style: italic;
+        }
+
+        .array-bracket, .object-bracket {
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-bar {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--dark-gray);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .box {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <h1>JSON Tree Viewer Interactivo</h1>
+    
+    <div class="controls">
+        <button id="formatBtn">Formatear JSON</button>
+        <button id="clearBtn">Limpiar</button>
+        <button id="exampleBtn">Ejemplo</button>
+    </div>
+    
     <div class="container">
-        <textarea id="input" class="box" rows="10" placeholder="Introduce el JSON aquí"></textarea>
+        <textarea id="input" class="box" rows="15" placeholder="Pega tu JSON aquí..."></textarea>
         <div id="output" class="box"></div>
+    </div>
+    
+    <div id="error" class="error-message"></div>
+    
+    <div class="status-bar">
+        Caracteres: <span id="charCount">0</span> | Nivel máximo de anidación: <span id="depthLevel">0</span>
     </div>
 
     <script>
-        function convertJSON() {
-            var input = document.getElementById("input").value;
-            var output = document.getElementById("output");
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('input');
+            const output = document.getElementById('output');
+            const errorElement = document.getElementById('error');
+            const formatBtn = document.getElementById('formatBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const exampleBtn = document.getElementById('exampleBtn');
+            const charCount = document.getElementById('charCount');
+            const depthLevel = document.getElementById('depthLevel');
 
-            try {
-                var parsedJSON = JSON.parse(input);
-                var indentedJSON = JSON.stringify(parsedJSON, null, 4);
-                output.innerHTML = formatJSON(parsedJSON);
-            } catch (error) {
-                output.innerHTML = "Error al analizar el JSON. Es posible que no sea un JSON válido";
+            // Ejemplo de JSON para cargar
+            const exampleJSON = {
+                "appName": "JSON Tree Viewer",
+                "version": "2.0",
+                "features": ["Interactive", "Collapsible", "Color-coded"],
+                "metadata": {
+                    "created": "2023-05-15",
+                    "author": {
+                        "name": "ChatGPT",
+                        "role": "AI Assistant"
+                    }
+                },
+                "stats": {
+                    "downloads": 1542,
+                    "rating": 4.8,
+                    "active": true
+                },
+                "nullValue": null
+            };
+
+            // Event listeners
+            input.addEventListener('input', function() {
+                updateCharCount();
+                clearError();
+            });
+
+            formatBtn.addEventListener('click', convertJSON);
+            clearBtn.addEventListener('click', clearAll);
+            exampleBtn.addEventListener('click', loadExample);
+            output.addEventListener('click', toggleNode);
+
+            // Funciones
+            function updateCharCount() {
+                charCount.textContent = input.value.length;
             }
-        }
 
-        function formatJSON(obj) {
-            if (typeof obj === 'object' && obj !== null) {
-                var html = '<div class="tree-node">' +
-                    '<span class="toggle-icon"></span>' +
-                    getObjectName(obj) +
-                    '<div class="children">';
-                for (var key in obj) {
-                    html += '<div>' + key + ': ' + formatJSON(obj[key]) + '</div>';
+            function clearError() {
+                errorElement.style.display = 'none';
+                errorElement.textContent = '';
+            }
+
+            function showError(message) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                output.innerHTML = '';
+                depthLevel.textContent = '0';
+            }
+
+            function clearAll() {
+                input.value = '';
+                output.innerHTML = '';
+                clearError();
+                charCount.textContent = '0';
+                depthLevel.textContent = '0';
+            }
+
+            function loadExample() {
+                input.value = JSON.stringify(exampleJSON, null, 2);
+                convertJSON();
+            }
+
+            function convertJSON() {
+                const jsonString = input.value.trim();
+                
+                if (!jsonString) {
+                    showError('Por favor, introduce un JSON válido.');
+                    return;
                 }
-                html += '</div></div>';
-                return html;
-            } else {
-                if (typeof obj === 'string') {
-                    return '"' + obj + '"';
+
+                try {
+                    const parsedJSON = JSON.parse(jsonString);
+                    output.innerHTML = formatJSON(parsedJSON);
+                    clearError();
+                    
+                    // Calcular profundidad máxima
+                    const maxDepth = calculateMaxDepth(parsedJSON);
+                    depthLevel.textContent = maxDepth;
+                } catch (error) {
+                    showError(`Error al analizar el JSON: ${error.message}`);
+                }
+            }
+
+            function calculateMaxDepth(obj, currentDepth = 0) {
+                if (typeof obj !== 'object' || obj === null) {
+                    return currentDepth;
+                }
+                
+                let maxDepth = currentDepth + 1;
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        const depth = calculateMaxDepth(obj[key], currentDepth + 1);
+                        if (depth > maxDepth) {
+                            maxDepth = depth;
+                        }
+                    }
+                }
+                return maxDepth;
+            }
+
+            function formatJSON(obj, depth = 0) {
+                if (typeof obj === 'object' && obj !== null) {
+                    const isArray = Array.isArray(obj);
+                    const isEmpty = isArray ? obj.length === 0 : Object.keys(obj).length === 0;
+                    
+                    let html = `<div class="tree-node ${depth > 3 ? 'collapsed' : ''}">`;
+                    
+                    if (!isEmpty) {
+                        html += `<span class="toggle-icon"></span>`;
+                    } else {
+                        html += `<span class="toggle-icon" style="visibility: hidden;"></span>`;
+                    }
+                    
+                    html += `<span class="${isArray ? 'array-bracket' : 'object-bracket'}">${isArray ? '[' : '{'}</span>`;
+                    
+                    if (isEmpty) {
+                        html += `<span class="${isArray ? 'array-bracket' : 'object-bracket'}">${isArray ? ']' : '}'}</span>`;
+                        html += '</div>';
+                        return html;
+                    }
+                    
+                    html += '<div class="children">';
+                    
+                    const keys = isArray ? obj : Object.keys(obj);
+                    for (let i = 0; i < keys.length; i++) {
+                        const key = isArray ? i : keys[i];
+                        const value = isArray ? obj[i] : obj[key];
+                        
+                        html += '<div>';
+                        
+                        if (!isArray) {
+                            html += `<span class="key">"${key}": </span>`;
+                        }
+                        
+                        html += formatJSON(value, depth + 1);
+                        
+                        if (i < keys.length - 1) {
+                            html += ',';
+                        }
+                        
+                        html += '</div>';
+                    }
+                    
+                    html += '</div>';
+                    html += `<span class="${isArray ? 'array-bracket' : 'object-bracket'}">${isArray ? ']' : '}'}</span>`;
+                    html += '</div>';
+                    
+                    return html;
                 } else {
-                    return obj;
+                    let valueType = typeof obj;
+                    let valueClass = '';
+                    let displayValue = obj;
+                    
+                    if (obj === null) {
+                        valueClass = 'null';
+                        displayValue = 'null';
+                    } else if (valueType === 'string') {
+                        valueClass = 'string';
+                        displayValue = `"${obj}"`;
+                    } else if (valueType === 'number') {
+                        valueClass = 'number';
+                    } else if (valueType === 'boolean') {
+                        valueClass = 'boolean';
+                        displayValue = obj ? 'true' : 'false';
+                    }
+                    
+                    return `<span class="${valueClass}">${displayValue}</span>`;
                 }
             }
-        }
 
-        function getObjectName(obj) {
-            if (Array.isArray(obj)) {
-                return '[Array]';
-            } else if (typeof obj === 'object') {
-                return '{Object}';
-            } else {
-                return obj;
+            function toggleNode(event) {
+                const target = event.target;
+                if (target.classList.contains("toggle-icon")) {
+                    const treeNode = target.parentNode;
+                    treeNode.classList.toggle("collapsed");
+                }
             }
-        }
 
-        function toggleNode(event) {
-            var target = event.target;
-            if (target.classList.contains("toggle-icon")) {
-                var treeNode = target.parentNode;
-                treeNode.classList.toggle("collapsed");
-            }
-        }
-
-        document.getElementById("input").addEventListener("input", convertJSON);
-
-        document.getElementById("output").addEventListener("click", toggleNode);
+            // Inicializar contador de caracteres
+            updateCharCount();
+        });
     </script>
 </body>
 </html>
