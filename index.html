@@ -36,23 +36,34 @@
             border-bottom: 2px solid var(--medium-gray);
         }
 
-        .container {
+        .main-container {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        .box {
+        .content-container {
+            display: flex;
+            gap: 20px;
             width: 100%;
+        }
+
+        .input-container, .output-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box {
             min-height: 400px;
             padding: 15px;
             border-radius: 8px;
             background-color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: box-shadow 0.3s ease;
+            height: 60vh;
+            overflow: auto;
         }
 
         .box:hover {
@@ -64,6 +75,8 @@
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
             border: 2px solid var(--medium-gray);
+            width: 100%;
+            height: 100%;
         }
 
         #input:focus {
@@ -76,6 +89,8 @@
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
             border: 2px solid var(--medium-gray);
+            width: 100%;
+            height: 100%;
         }
 
         .tree-node {
@@ -178,7 +193,7 @@
         }
 
         @media (max-width: 768px) {
-            .container {
+            .content-container {
                 flex-direction: column;
             }
             
@@ -189,23 +204,29 @@
     </style>
 </head>
 <body>
-    <h1>JSON Tree Viewer Interactivo</h1>
-    
-    <div class="controls">
-        <button id="formatBtn">Formatear JSON</button>
-        <button id="clearBtn">Limpiar</button>
-        <button id="exampleBtn">Ejemplo</button>
-    </div>
-    
-    <div class="container">
-        <textarea id="input" class="box" rows="15" placeholder="Pega tu JSON aquí..."></textarea>
-        <div id="output" class="box"></div>
-    </div>
-    
-    <div id="error" class="error-message"></div>
-    
-    <div class="status-bar">
-        Caracteres: <span id="charCount">0</span> | Nivel máximo de anidación: <span id="depthLevel">0</span>
+    <div class="main-container">
+        <h1>JSON Tree Viewer Interactivo</h1>
+        
+        <div class="controls">
+            <button id="formatBtn">Formatear JSON</button>
+            <button id="clearBtn">Limpiar</button>
+            <button id="exampleBtn">Ejemplo</button>
+        </div>
+        
+        <div class="content-container">
+            <div class="input-container">
+                <textarea id="input" class="box" placeholder="Pega tu JSON aquí..."></textarea>
+            </div>
+            <div class="output-container">
+                <div id="output" class="box"></div>
+            </div>
+        </div>
+        
+        <div id="error" class="error-message"></div>
+        
+        <div class="status-bar">
+            Caracteres: <span id="charCount">0</span> | Nivel de anidación: <span id="depthLevel">0</span>
+        </div>
     </div>
 
     <script>
@@ -228,7 +249,31 @@
                     "created": "2023-05-15",
                     "author": {
                         "name": "ChatGPT",
-                        "role": "AI Assistant"
+                        "role": "AI Assistant",
+                        "details": {
+                            "experience": "Advanced",
+                            "capabilities": ["Natural Language", "Code Generation", "Creative Writing"],
+                            "limitations": {
+                                "knowledgeCutoff": "October 2023",
+                                "realTimeAccess": false,
+                                "deepNested": {
+                                    "example": "This is a deeply nested object to demonstrate unlimited nesting levels",
+                                    "count": 7,
+                                    "nested": {
+                                        "level1": 1,
+                                        "level2": 2,
+                                        "level3": 3,
+                                        "level4": {
+                                            "level5": {
+                                                "level6": {
+                                                    "level7": "No nesting limit!"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "stats": {
@@ -323,7 +368,7 @@
                     const isArray = Array.isArray(obj);
                     const isEmpty = isArray ? obj.length === 0 : Object.keys(obj).length === 0;
                     
-                    let html = `<div class="tree-node ${depth > 3 ? 'collapsed' : ''}">`;
+                    let html = `<div class="tree-node">`;
                     
                     if (!isEmpty) {
                         html += `<span class="toggle-icon"></span>`;
