@@ -206,6 +206,9 @@
 </head>
 <body>
     <div class="main-container">
+        <div align="center">
+            <img src="static/img/logo.png" alt="Logo" width="150">
+        </div>
         <h1>JSON Tree Viewer Interactivo</h1>
         
         <div class="controls">
@@ -243,46 +246,56 @@
 
             // Ejemplo de JSON para cargar
             const exampleJSON = {
-                "appName": "JSON Tree Viewer",
-                "version": "2.0",
-                "features": ["Interactive", "Collapsible", "Color-coded"],
-                "metadata": {
-                    "created": "2023-05-15",
-                    "author": {
-                        "name": "ChatGPT",
-                        "role": "AI Assistant",
-                        "details": {
-                            "experience": "Advanced",
-                            "capabilities": ["Natural Language", "Code Generation", "Creative Writing"],
-                            "limitations": {
-                                "knowledgeCutoff": "October 2023",
-                                "realTimeAccess": false,
-                                "deepNested": {
-                                    "example": "This is a deeply nested object to demonstrate unlimited nesting levels",
-                                    "count": 7,
-                                    "nested": {
-                                        "level1": 1,
-                                        "level2": 2,
-                                        "level3": 3,
-                                        "level4": {
-                                            "level5": {
-                                                "level6": {
-                                                    "level7": "No nesting limit!"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                "categoria": "Clásicos del Cine",
+                "totalPeliculas": 3,
+                "peliculas": [
+                    {
+                        "titulo": "Casablanca",
+                        "año": 1942,
+                        "director": {
+                            "nombre": "Michael Curtiz",
+                            "nacionalidad": "Húngaro",
+                            "premios": ["Oscar al Mejor Director"]
+                        },
+                        "generos": ["Romance", "Drama", "Guerra"],
+                        "duracion": "102 min",
+                        "actoresPrincipales": ["Humphrey Bogart", "Ingrid Bergman", "Paul Henreid"]
+                    },
+                    {
+                        "titulo": "Ciudadano Kane",
+                        "año": 1941,
+                        "director": {
+                            "nombre": "Orson Welles",
+                            "nacionalidad": "Estadounidense",
+                            "premios": ["Oscar al Mejor Guión Original"]
+                        },
+                        "generos": ["Drama", "Misterio", "Cine negro"],
+                        "duracion": "119 min",
+                        "actoresPrincipales": ["Orson Welles", "Joseph Cotten", "Dorothy Comingore"]
+                    },
+                    {
+                        "titulo": "Lo que el viento se llevó",
+                        "año": 1939,
+                        "director": {
+                            "nombre": "Victor Fleming",
+                            "nacionalidad": "Estadounidense",
+                            "premios": ["Oscar al Mejor Director"]
+                        },
+                        "generos": ["Romance", "Drama", "Guerra"],
+                        "duracion": "238 min",
+                        "actoresPrincipales": ["Clark Gable", "Vivien Leigh", "Leslie Howard"]
                     }
-                },
-                "stats": {
-                    "downloads": 1542,
-                    "rating": 4.8,
-                    "active": true
-                },
-                "nullValue": null
+                ],
+                "informacionAdicional": {
+                    "epoca": "Época dorada de Hollywood",
+                    "rangoAnios": "1939-1942",
+                    "estudioPrincipal": "Warner Bros.",
+                    "reconocimientos": {
+                        "oscarsTotales": 15,
+                        "nominaciones": 24,
+                        "peliculasEnTop100": 3
+                    }
+                }
             };
 
             // Event listeners

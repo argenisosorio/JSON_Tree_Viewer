@@ -16,6 +16,8 @@ completa. Sirve sin conexión a internet.
 
 -Pruébalo aquí: https://argenisosorio.github.io/JSON_Tree_Viewer/
 
-## Capturas
+## Captura
 
-![1.png](1.png "1.png")
+<div align="center">
+  <img src="static/img/capture-1.png" alt="capture" width="100%">
+</div>
