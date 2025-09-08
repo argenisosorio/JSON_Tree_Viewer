@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="static/img/logo.png" alt="Logo" width="300">
+</div>
+
 # JSON Tree Viewer
 
 Este proyecto es una implementación en HTML, CSS y JavaScript que permite
