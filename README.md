@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="static/img/logo.png" alt="Logo" width="300">
+</div>
+
 # JSON Tree Viewer
 
 Este proyecto es una implementación en HTML, CSS y JavaScript que permite
@@ -12,6 +16,8 @@ completa. Sirve sin conexión a internet.
 
 -Pruébalo aquí: https://argenisosorio.github.io/JSON_Tree_Viewer/
 
-## Capturas
+## Captura
 
-![1.png](1.png "1.png")
+<div align="center">
+  <img src="static/img/capture-1.png" alt="capture" width="100%">
+</div>
