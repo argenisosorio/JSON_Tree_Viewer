@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formateador JSON</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+      --text: #e0e0e0;
+      --accent: #007acc;
+      --accent-hover: #005999;
+      --border: #333;
+      --error: #ff5555;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    textarea, pre {
+      width: 100%;
+      height: 70vh;
+      box-sizing: border-box;
+      background-color: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      resize: vertical;
+      overflow: auto;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-size: 0.9rem;
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Formateador de JSON a Árbol</h1>
+
+    <p>
+      Introduce tu JSON en una sola línea y haz clic en "Formatear" para ver la
+      estructura en árbol. También puedes copiar el resultado al portapapeles.
+    </p>
+
+    <div class="actions">
+      <button onclick="formatJSON()">Formatear</button>
+      <button onclick="copyToClipboard()">Copiar Árbol</button>
+    </div>
+    
+    <div id="error" class="error-msg"></div>
+
+    <div class="grid">
+      <div class="panel">
+        <label for="input-json">JSON en una línea (Input):</label>
+        <textarea id="input-json" placeholder="Pega tu JSON aquí..."></textarea>
+      </div>
+      
+      <div class="panel">
+        <label for="output-json">Vista en Árbol (Output):</label>
+        <pre id="output-json"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatJSON() {
+      const input = document.getElementById('input-json').value;
+      const output = document.getElementById('output-json');
+      const errorDiv = document.getElementById('error');
+      
+      errorDiv.textContent = '';
+      
+      if (!input.trim()) {
+        output.textContent = '';
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(input);
+        output.textContent = JSON.stringify(parsed, null, 2);
+      } catch (e) {
+        errorDiv.textContent = 'Error: El texto ingresado no es un JSON válido (' + e.message + ')';
+      }
+    }
+
+    function copyToClipboard() {
+      const outputText = document.getElementById('output-json').textContent;
+      const errorDiv = document.getElementById('error');
+
+      if (!outputText) {
+        errorDiv.textContent = 'No hay nada que copiar.';
+        return;
+      }
+
+      navigator.clipboard.writeText(outputText)
+        .then(() => {
+          const prevErr = errorDiv.textContent;
+          errorDiv.style.color = '#4caf50';
+          errorDiv.textContent = '¡Copiado al portapapeles!';
+          setTimeout(() => {
+            errorDiv.style.color = '';
+            errorDiv.textContent = '';
+          }, 2000);
+        })
+        .catch(err => {
+          errorDiv.textContent = 'Error al copiar al portapapeles.';
+        });
+    }
+
+    // Auto-formatear mientras el usuario pega contenido
+    document.getElementById('input-json').addEventListener('input', formatJSON);
+  </script>
+
+</body>
+</html>
